@@ -1,4 +1,5 @@
 import { FuzzyFinder } from "./ui/FuzzyFinder.js";
+import { Overlay } from "./ui/Overlay.js";
 
 export const EXTENSION_BOOKMARK_FOLDER = "Tmux Tab Groups";
 
@@ -149,6 +150,11 @@ class TabGroupsManager {
       case "restore-hibernated-group":
         await this.restoreHibernatedGroup(request.folderId);
         break;
+      case "rename-group":
+        await chrome.tabGroups.update(request.groupId, {
+          title: request.newTitle,
+        });
+        break;
       case "remove-css":
         break;
     }
@@ -194,6 +200,9 @@ class TabGroupsManager {
           break;
         case "f":
           await FuzzyFinder.show();
+          break;
+        case ",":
+          await this.renameCurrentGroup();
           break;
         case "?":
           await this.showHelp();
@@ -247,7 +256,7 @@ class TabGroupsManager {
             isHibernated: true,
             type: "hibernated",
           };
-        })
+        }),
       );
 
       return hibernatedGroups;
@@ -368,6 +377,37 @@ class TabGroupsManager {
       await chrome.bookmarks.removeTree(folderId);
     } catch (error) {
       console.error("Failed to restore hibernated group:", error);
+    }
+  }
+
+  async renameCurrentGroup() {
+    try {
+      const [currentTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
+      if (currentTab.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE) {
+        return;
+      }
+
+      const group = await chrome.tabGroups.get(currentTab.groupId);
+      const currentTitle = group.title || "";
+
+      const newTitle = await Overlay.showPrompt(
+        currentTab.id,
+        "Rename tab group",
+        "Enter group name...",
+        currentTitle,
+      );
+
+      if (newTitle) {
+        await chrome.tabGroups.update(currentTab.groupId, {
+          title: newTitle,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to rename group:", error);
     }
   }
 
@@ -527,14 +567,31 @@ class TabGroupsManager {
     const allGroups = await chrome.tabGroups.query({
       windowId: chrome.windows.WINDOW_ID_CURRENT,
     });
+
+    // Find highest group number
+    let maxNum = 0;
+    for (const group of allGroups) {
+      const match = group.title?.match(/^Group (\d+)$/);
+      if (match) {
+        maxNum = Math.max(maxNum, parseInt(match[1]));
+      }
+    }
+
     for (const group of allGroups) {
       await chrome.tabGroups.update(group.id, { collapsed: true });
     }
 
-    // Create new group
-    const group = await chrome.tabs.group({ tabIds: [currentTab.id] });
-    await chrome.tabGroups.update(group, {
-      title: `Group ${Date.now() % 1000}`,
+    // Create NEW tab first
+    const newTab = await chrome.tabs.create({
+      url: "chrome://newtab",
+      index: currentTab.index + 1,
+      active: true,
+    });
+
+    // Then create group with the new tab
+    const groupId = await chrome.tabs.group({ tabIds: [newTab.id] });
+    await chrome.tabGroups.update(groupId, {
+      title: `Group ${maxNum + 1}`,
       collapsed: false,
     });
   }

@@ -49,7 +49,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["fuzzy-finder.css"]
+      "resources": []
     }
   ]
 }

@@ -35,6 +35,7 @@ After pressing `Ctrl+A`, use these keys:
 
 - `c` - Create new tab in current group
 - `g` - Create new tab group
+- `,` - Rename current group
 - `a` - Add last tab to current group
 - `x` - Hibernate current group (save to bookmarks)
 - `f` - Open fuzzy finder for quick navigation
