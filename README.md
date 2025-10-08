@@ -52,7 +52,7 @@ Since this extension isn't yet published on the Chrome Web Store, you'll need to
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/jcger/tab-group-manager-extension.git
+   git clone https://github.com/jcger/tmux-tabs-groups.git
    cd tab-group-manager-extension
    ```
 
