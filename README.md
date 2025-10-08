@@ -64,7 +64,6 @@ Since this extension isn't yet published on the Chrome Web Store, you'll need to
    ```
 
 3. **Load in Chrome**
-
    - Open Chrome and go to `chrome://extensions/`
    - Enable "Developer mode" (toggle in top right)
    - Click "Load unpacked"
@@ -101,6 +100,10 @@ Some websites (especially Google Docs) capture keyboard events and may prevent t
 ## 📜 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
+
+## Privacy
+
+This extension does not collect or transmit any personal data. All tab information is stored locally on your device. See our [Privacy Policy](PRIVACY.md) for details.
 
 ## 🙏 Acknowledgments
 
