@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tmux Tab Groups - Help</title>
+    <link rel="stylesheet" href="help.css" />
+  </head>
+  <body>
+    <div class="help-container">
+      <div class="header">
+        <h1>Tmux Tab Groups</h1>
+        <p class="prefix-note">Press <kbd>Ctrl+A</kbd> then:</p>
+        <p class="toggle-note">
+          Use <kbd>Ctrl+A</kbd> <kbd>?</kbd> to show help
+        </p>
+      </div>
+
+      <div class="shortcuts-grid">
+        <div class="section">
+          <h3>Navigation</h3>
+          <div class="shortcut-item"><kbd>n</kbd><span>Next tab</span></div>
+          <div class="shortcut-item"><kbd>p</kbd><span>Previous tab</span></div>
+          <div class="shortcut-item"><kbd>l</kbd><span>Last tab</span></div>
+        </div>
+
+        <div class="section">
+          <h3>Management</h3>
+          <div class="shortcut-item"><kbd>c</kbd><span>New tab</span></div>
+          <div class="shortcut-item"><kbd>g</kbd><span>New group</span></div>
+          <div class="shortcut-item"><kbd>a</kbd><span>Add last tab</span></div>
+          <div class="shortcut-item">
+            <kbd>x</kbd><span>Hibernate group</span>
+          </div>
+          <div class="shortcut-item"><kbd>f</kbd><span>Fuzzy finder</span></div>
+          <div class="shortcut-item"><kbd>?</kbd><span>Show help</span></div>
+        </div>
+      </div>
+
+      <div class="quick-select-section">
+        <h3>Quick Select</h3>
+        <div class="shortcut-item"><kbd>1-9</kbd><span>Tab 1-9</span></div>
+        <div class="shortcut-item"><kbd>0</kbd><span>Tab 10</span></div>
+      </div>
+    </div>
+    <script src="help.js"></script>
+  </body>
+</html>
