@@ -1,0 +1,65 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ttg-page-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--ttg-text);
+  color-scheme: light dark;
+}
+
+body.finder-page {
+  display: flex;
+  flex-direction: column;
+}
+
+body.finder-page .fuzzy-overlay {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding-top: 0 !important;
+  background: transparent !important;
+  align-items: stretch !important;
+}
+
+body.finder-page .fuzzy-dialog {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--ttg-page-dialog-bg) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.finder-page .fuzzy-results {
+  flex: 1 !important;
+  max-height: none !important;
+}
+
+body.command-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ttg-page-dialog-bg);
+}
+
+body.command-page .command-shell {
+  width: 100%;
+  padding: 0 18px;
+  box-sizing: border-box;
+}
+
+body.command-page .command-hint {
+  margin: 0;
+  color: var(--ttg-text-muted);
+  font-size: 14px;
+}

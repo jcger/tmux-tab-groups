@@ -1,7 +1,12 @@
 import { FuzzyFinder } from "./ui/FuzzyFinder.js";
 import { Overlay } from "./ui/Overlay.js";
+import { EXTENSION_BOOKMARK_FOLDER } from "./constants.js";
+import {
+  canInjectIntoTab,
+  getCenteredPopupBounds,
+} from "./utils/tabs.js";
 
-export const EXTENSION_BOOKMARK_FOLDER = "Tmux Tab Groups";
+export { EXTENSION_BOOKMARK_FOLDER };
 
 class TabGroupsManager {
   constructor() {
@@ -9,6 +14,8 @@ class TabGroupsManager {
     this.tabHistory = [];
     this.currentTabId = null;
     this.helpWindowId = null;
+    this.targetWindowId = null;
+    this.commandPopupId = null;
     this.init();
   }
 
@@ -30,12 +37,19 @@ class TabGroupsManager {
     this.initializeCurrentTab();
   }
 
+  async getWindowId() {
+    return this.targetWindowId ?? chrome.windows.WINDOW_ID_CURRENT;
+  }
+
+  async getActiveTab() {
+    const windowId = await this.getWindowId();
+    const [tab] = await chrome.tabs.query({ active: true, windowId });
+    return tab;
+  }
+
   async initializeCurrentTab() {
     try {
-      const [currentTab] = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
+      const currentTab = await this.getActiveTab();
       if (currentTab) {
         this.currentTabId = currentTab.id;
         this.tabHistory = [currentTab.id];
@@ -60,26 +74,81 @@ class TabGroupsManager {
       active: true,
       currentWindow: true,
     });
+    if (!tab) {
+      this.commandMode = false;
+      return;
+    }
 
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => {
-        const listener = (e) => {
-          if (["shift", "control", "alt", "meta"].includes(e.key.toLowerCase()))
-            return;
+    this.targetWindowId = tab.windowId;
 
-          e.preventDefault();
-          chrome.runtime.sendMessage({
-            type: "command",
-            key: e.key.toLowerCase(),
-          });
-          document.removeEventListener("keydown", listener, true);
-        };
-        document.addEventListener("keydown", listener, true);
-      },
-    });
+    if (!canInjectIntoTab(tab)) {
+      await this.openCommandCapture(tab.windowId);
+      setTimeout(() => {
+        this.commandMode = false;
+      }, 5000);
+      return;
+    }
+
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (windowId) => {
+          const listener = (e) => {
+            if (
+              ["shift", "control", "alt", "meta"].includes(e.key.toLowerCase())
+            )
+              return;
+
+            e.preventDefault();
+            chrome.runtime.sendMessage({
+              type: "command",
+              key: e.key.toLowerCase(),
+              windowId,
+            });
+            document.removeEventListener("keydown", listener, true);
+          };
+          document.addEventListener("keydown", listener, true);
+        },
+        args: [tab.windowId],
+      });
+    } catch (error) {
+      console.error("Failed to enter command mode via inject:", error);
+      await this.openCommandCapture(tab.windowId);
+    }
 
     setTimeout(() => (this.commandMode = false), 3000);
+  }
+
+  async openCommandCapture(windowId) {
+    try {
+      if (this.commandPopupId) {
+        try {
+          await chrome.windows.remove(this.commandPopupId);
+        } catch (_) {}
+        this.commandPopupId = null;
+      }
+
+      const bounds = await getCenteredPopupBounds(560, 72, windowId);
+      const popup = await chrome.windows.create({
+        url: chrome.runtime.getURL(
+          `command.html?windowId=${encodeURIComponent(windowId)}`,
+        ),
+        type: "popup",
+        focused: true,
+        ...bounds,
+      });
+      this.commandPopupId = popup.id;
+
+      const onRemoved = (id) => {
+        if (id === this.commandPopupId) {
+          this.commandPopupId = null;
+          chrome.windows.onRemoved.removeListener(onRemoved);
+        }
+      };
+      chrome.windows.onRemoved.addListener(onRemoved);
+    } catch (error) {
+      console.error("Failed to open command capture:", error);
+    }
   }
 
   async toggleHelpWindow() {
@@ -142,13 +211,31 @@ class TabGroupsManager {
   async handleMessage(request, sender, sendResponse) {
     switch (request.type) {
       case "command":
+        if (request.windowId != null) {
+          this.targetWindowId = request.windowId;
+        }
         await this.executeCommand(request.key);
         break;
+      case "get-finder-data": {
+        const windowId =
+          request.windowId ??
+          this.targetWindowId ??
+          chrome.windows.WINDOW_ID_CURRENT;
+        sendResponse(await FuzzyFinder.getData(windowId));
+        break;
+      }
       case "switch-to-group":
-        await this.switchToGroup(request.groupId);
+        if (request.windowId != null) {
+          this.targetWindowId = request.windowId;
+        }
+        await this.switchToGroup(request.groupId, request.windowId);
         break;
       case "restore-hibernated-group":
+        if (request.windowId != null) {
+          this.targetWindowId = request.windowId;
+        }
         await this.restoreHibernatedGroup(request.folderId);
+        this.targetWindowId = null;
         break;
       case "rename-group":
         await chrome.tabGroups.update(request.groupId, {
@@ -162,6 +249,7 @@ class TabGroupsManager {
 
   async executeCommand(key) {
     try {
+      const windowId = await this.getWindowId();
       switch (key) {
         case "n":
           await this.nextTab();
@@ -199,7 +287,7 @@ class TabGroupsManager {
           await this.hibernateCurrentGroup();
           break;
         case "f":
-          await FuzzyFinder.show();
+          await FuzzyFinder.show(windowId);
           break;
         case ",":
           await this.renameCurrentGroup();
@@ -212,6 +300,9 @@ class TabGroupsManager {
       console.error("Command error:", error);
     }
     this.commandMode = false;
+    if (key !== "f" && key !== ",") {
+      this.targetWindowId = null;
+    }
   }
 
   async findOrCreateExtensionFolder() {
@@ -524,9 +615,11 @@ class TabGroupsManager {
     }
   }
 
-  async switchToGroup(groupId) {
+  async switchToGroup(groupId, windowId) {
+    const targetWindowId =
+      windowId ?? this.targetWindowId ?? chrome.windows.WINDOW_ID_CURRENT;
     const allGroups = await chrome.tabGroups.query({
-      windowId: chrome.windows.WINDOW_ID_CURRENT,
+      windowId: targetWindowId,
     });
 
     for (const group of allGroups) {
@@ -540,7 +633,12 @@ class TabGroupsManager {
     const groupTabs = await chrome.tabs.query({ groupId });
     if (groupTabs.length > 0) {
       await chrome.tabs.update(groupTabs[0].id, { active: true });
+      try {
+        await chrome.windows.update(groupTabs[0].windowId, { focused: true });
+      } catch (_) {}
     }
+
+    this.targetWindowId = null;
   }
 
   async switchToTabInGroup(tabNumber) {

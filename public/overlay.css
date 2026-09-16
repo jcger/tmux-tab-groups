@@ -1,0 +1,353 @@
+/* Shared palette — follows OS theme */
+:root {
+  --ttg-overlay-bg: rgba(0, 0, 0, 0.28);
+  --ttg-dialog-bg: rgba(246, 246, 246, 0.88);
+  --ttg-dialog-border: rgba(0, 0, 0, 0.1);
+  --ttg-dialog-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 24px 80px rgba(0, 0, 0, 0.22);
+  --ttg-divider: rgba(0, 0, 0, 0.08);
+  --ttg-text: #1d1d1f;
+  --ttg-text-muted: #86868b;
+  --ttg-text-muted-strong: #6e6e73;
+  --ttg-caret: #1d1d1f;
+  --ttg-hover: rgba(0, 0, 0, 0.04);
+  --ttg-selected: rgba(0, 0, 0, 0.08);
+  --ttg-chip-bg: rgba(0, 0, 0, 0.05);
+  --ttg-chip-border: rgba(0, 0, 0, 0.08);
+  --ttg-chip-text: #6e6e73;
+  --ttg-chip-selected-bg: rgba(0, 0, 0, 0.08);
+  --ttg-chip-selected-text: #3a3a3c;
+  --ttg-kbd-bg: rgba(0, 0, 0, 0.06);
+  --ttg-kbd-border: rgba(0, 0, 0, 0.1);
+  --ttg-kbd-text: #3a3a3c;
+  --ttg-scrollbar: rgba(0, 0, 0, 0.18);
+  --ttg-scrollbar-hover: rgba(0, 0, 0, 0.28);
+  --ttg-noise-opacity: 0.03;
+  --ttg-page-bg: #f2f2f7;
+  --ttg-page-dialog-bg: #f6f6f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ttg-overlay-bg: rgba(0, 0, 0, 0.45);
+    --ttg-dialog-bg: rgba(36, 36, 36, 0.82);
+    --ttg-dialog-border: rgba(255, 255, 255, 0.12);
+    --ttg-dialog-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.4),
+      0 24px 80px rgba(0, 0, 0, 0.55);
+    --ttg-divider: rgba(255, 255, 255, 0.08);
+    --ttg-text: #f5f5f5;
+    --ttg-text-muted: #8a8a8e;
+    --ttg-text-muted-strong: #b0b0b4;
+    --ttg-caret: #fff;
+    --ttg-hover: rgba(255, 255, 255, 0.04);
+    --ttg-selected: rgba(255, 255, 255, 0.12);
+    --ttg-chip-bg: rgba(255, 255, 255, 0.06);
+    --ttg-chip-border: rgba(255, 255, 255, 0.08);
+    --ttg-chip-text: #8a8a8e;
+    --ttg-chip-selected-bg: rgba(255, 255, 255, 0.1);
+    --ttg-chip-selected-text: #d0d0d4;
+    --ttg-kbd-bg: rgba(255, 255, 255, 0.08);
+    --ttg-kbd-border: rgba(255, 255, 255, 0.1);
+    --ttg-kbd-text: #c8c8cc;
+    --ttg-scrollbar: rgba(255, 255, 255, 0.12);
+    --ttg-scrollbar-hover: rgba(255, 255, 255, 0.2);
+    --ttg-noise-opacity: 0.045;
+    --ttg-page-bg: #1c1c1e;
+    --ttg-page-dialog-bg: #242424;
+  }
+}
+
+.fuzzy-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--ttg-overlay-bg) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding-top: 18vh !important;
+  z-index: 2147483647 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  color: var(--ttg-text) !important;
+  color-scheme: light dark !important;
+}
+
+.fuzzy-dialog {
+  position: relative !important;
+  width: 680px !important;
+  max-width: calc(100vw - 48px) !important;
+  background: var(--ttg-dialog-bg) !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--ttg-dialog-border) !important;
+  box-shadow: var(--ttg-dialog-shadow) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  overflow: hidden !important;
+  color: var(--ttg-text) !important;
+}
+
+.fuzzy-dialog::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  opacity: var(--ttg-noise-opacity) !important;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") !important;
+  z-index: 0 !important;
+}
+
+.fuzzy-dialog > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.fuzzy-search-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 16px 18px !important;
+  border-bottom: 1px solid var(--ttg-divider) !important;
+}
+
+.fuzzy-search-icon {
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0 !important;
+  border-radius: 6px !important;
+  background: linear-gradient(135deg, #ff6363 0%, #ff4d8d 45%, #c44dff 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18) !important;
+}
+
+.fuzzy-search-icon svg {
+  width: 12px !important;
+  height: 12px !important;
+  display: block !important;
+}
+
+.fuzzy-search {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--ttg-text) !important;
+  font-family: inherit !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+  outline: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  caret-color: var(--ttg-caret) !important;
+}
+
+.fuzzy-search::placeholder {
+  color: var(--ttg-text-muted) !important;
+}
+
+.fuzzy-results {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  padding: 8px !important;
+}
+
+.fuzzy-section-label {
+  padding: 8px 12px 4px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--ttg-text-muted) !important;
+}
+
+.group-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: background-color 0.08s ease !important;
+  color: var(--ttg-text) !important;
+  user-select: none !important;
+}
+
+.group-item:hover:not(.selected):not(.disabled) {
+  background: var(--ttg-hover) !important;
+}
+
+.group-item.selected {
+  background: var(--ttg-selected) !important;
+}
+
+.group-item.disabled {
+  opacity: 0.55 !important;
+  cursor: default !important;
+}
+
+.group-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 7px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+}
+
+.group-icon svg {
+  width: 15px !important;
+  height: 15px !important;
+  display: block !important;
+}
+
+.group-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+}
+
+.group-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.group-subtitle {
+  font-size: 13px !important;
+  color: var(--ttg-text-muted) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.group-item.selected .group-subtitle {
+  color: var(--ttg-text-muted-strong) !important;
+}
+
+.group-meta {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  margin-left: auto !important;
+}
+
+.group-badge {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--ttg-chip-text) !important;
+  padding: 2px 7px !important;
+  border-radius: 5px !important;
+  background: var(--ttg-chip-bg) !important;
+  border: 1px solid var(--ttg-chip-border) !important;
+}
+
+.group-item.selected .group-badge {
+  color: var(--ttg-chip-selected-text) !important;
+  background: var(--ttg-chip-selected-bg) !important;
+}
+
+.group-kbd {
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 5px !important;
+  background: var(--ttg-kbd-bg) !important;
+  border: 1px solid var(--ttg-kbd-border) !important;
+  color: var(--ttg-kbd-text) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+}
+
+.group-item.selected .group-kbd {
+  display: inline-flex !important;
+}
+
+.fuzzy-empty {
+  padding: 28px 16px !important;
+  text-align: center !important;
+  color: var(--ttg-text-muted) !important;
+  font-size: 14px !important;
+}
+
+.fuzzy-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 10px 16px !important;
+  border-top: 1px solid var(--ttg-divider) !important;
+  color: var(--ttg-text-muted) !important;
+  font-size: 12px !important;
+}
+
+.fuzzy-footer-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.fuzzy-footer-action {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.fuzzy-footer-action kbd {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  padding: 0 5px !important;
+  border-radius: 4px !important;
+  background: var(--ttg-kbd-bg) !important;
+  border: 1px solid var(--ttg-kbd-border) !important;
+  color: var(--ttg-kbd-text) !important;
+  font-size: 11px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  box-sizing: border-box !important;
+}
+
+.fuzzy-results::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.fuzzy-results::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.fuzzy-results::-webkit-scrollbar-thumb {
+  background: var(--ttg-scrollbar) !important;
+  border-radius: 4px !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+}
+
+.fuzzy-results::-webkit-scrollbar-thumb:hover {
+  background: var(--ttg-scrollbar-hover) !important;
+  background-clip: padding-box !important;
+}

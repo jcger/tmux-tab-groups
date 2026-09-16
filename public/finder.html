@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Switch Group</title>
+    <link rel="stylesheet" href="overlay.css" />
+    <link rel="stylesheet" href="overlay-page.css" />
+  </head>
+  <body class="finder-page">
+    <div class="fuzzy-overlay">
+      <div class="fuzzy-dialog">
+        <div class="fuzzy-search-row">
+          <div class="fuzzy-search-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 1.5L14.5 8L8 14.5L1.5 8L8 1.5Z"
+                fill="white"
+                fill-opacity="0.95"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            class="fuzzy-search"
+            placeholder="Search groups..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="fuzzy-results"></div>
+        <div class="fuzzy-footer">
+          <span>Switch group</span>
+          <div class="fuzzy-footer-actions">
+            <div class="fuzzy-footer-action">
+              <span>Navigate</span><kbd>↑</kbd><kbd>↓</kbd>
+            </div>
+            <div class="fuzzy-footer-action"><span>Open</span><kbd>↵</kbd></div>
+            <div class="fuzzy-footer-action">
+              <span>Close</span><kbd>esc</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="finder.js"></script>
+  </body>
+</html>
